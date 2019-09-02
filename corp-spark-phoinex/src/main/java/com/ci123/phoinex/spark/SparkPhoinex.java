@@ -19,7 +19,7 @@ import java.util.Properties;
 public class SparkPhoinex {
 
     public static void main(String[] args) {
-        SparkConf sparkConf = new SparkConf().setMaster("local[*]").setAppName(Thread.currentThread().getName())
+        SparkConf sparkConf = new SparkConf().setMaster("local[*]").setAppName(Thread.currentThread() .getStackTrace()[1].getClassName())
                 .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
         // 得到一个 session 会话
         SparkSession session = SparkSession
