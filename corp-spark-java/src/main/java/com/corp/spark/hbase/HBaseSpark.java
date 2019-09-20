@@ -53,12 +53,6 @@ public class HBaseSpark {
                 Result.class
         );
         // 直接对rdd 做foreach 操作
-//        resultRDD.foreach(new VoidFunction<Tuple2<ImmutableBytesWritable, Result>>() {
-//            @Override
-//            public void call(Tuple2<ImmutableBytesWritable, Result> tuple2) throws Exception {
-//
-//            }
-//        });
 
         List<Tuple2<ImmutableBytesWritable, Result>> collect = resultRDD.collect();
         Iterator<Tuple2<ImmutableBytesWritable, Result>> iterator = collect.iterator();

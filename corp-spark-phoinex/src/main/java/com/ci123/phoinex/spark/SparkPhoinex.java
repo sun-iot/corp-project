@@ -46,26 +46,7 @@ public class SparkPhoinex {
                 .option("zkUrl" , "jdbc:phoenix:hadoop101,hadoop102,hadoop103:2181")
                 .load();
         load.registerTempTable("city_info");
-//        JavaRDD<Row> map = session.read()
-//                .jdbc("jdbc:phoenix:hadoop101,hadoop102,hadoop103:2181", "sql语句", connProp)
-//                .filter("true")
-//                .javaRDD()
-//                .mapToPair(r -> {
-//                    return new Tuple2<>(r.getString(0), r.getString(1));
-//                })
-//                .distinct()
-//                .groupByKey()
-//                .map(r -> {
-//                    StringBuffer sb = new StringBuffer();
-//                    r._2().forEach(v -> sb.append(v));
-//                    return RowFactory.create(r._1(), sb.toString());
-//                });
-//
-//
-//        for (Row row : map.collect()) {
-//            System.out.println(row.get(1));
-//        }
-        //Dataset<Row> df = load.toDF().as();
+
         Dataset<Row> select_city_from_city_info = session.sql("select CITY from city_info");
         select_city_from_city_info.show();
        // load.show();

@@ -1,10 +1,15 @@
 package com.ci123.phoinex.spark;
 
+import com.ci123.phoinex.spark.bean.EmpEmail;
 import com.ci123.phoinex.spark.util.ConfigurationUtil;
 import com.ci123.phoinex.spark.util.SparkSessionUtil;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+
+import java.util.Iterator;
 
 /**
  * Copyright (c) 2018-2028 Corp-ci All Rights Reserved
@@ -39,26 +44,21 @@ public class SparkPhoinexAdvance2 {
         String sql = "select emp.name , emp.email , emp.company , emp.address , dept.dept_name , dept.dept_addr from emp left join dept on emp.deptid=dept.deptid";
 
         Dataset<Row> deptEmp = session.sql(sql);
+        JavaRDD<EmpEmail> map = deptEmp.javaRDD().map(EmpEmail::pasreEmp);
+
+        map.foreachPartition(new VoidFunction<Iterator<EmpEmail>>() {
+            @Override
+            public void call(Iterator<EmpEmail> empEmailIterator) throws Exception {
+                while (empEmailIterator.hasNext()) {
+                    EmpEmail next = empEmailIterator.next();
+                    next.getEamil() ;
+                }
+            }
+        });
         deptEmp.select("name" , "email").show();
 
 
         session.stop();
 
-        /**
-         * 第二种方式
-         */
-//        SparkConf conf = new SparkConf().setMaster("local[*]")
-//                .setAppName(Thread.currentThread().getName())
-//                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
-//        SQLContext sqlContext = SQLContext.getOrCreate(new SparkContext(conf));
-//        Map map = new HashMap<>();
-//        map.put("table" , "us_population");
-//        map.put("zkUrl" ,ConfigurationUtil.getSparkPhoinexProperties("phoinex-zkurl")) ;
-//        Dataset load = sqlContext.load(ConfigurationUtil.getSparkPhoinexProperties("phoinex-format"), map);
-//        load.registerTempTable("city");
-//        load.show();
-//
-//        Dataset df = load.toDF();
-//        df.show();
     }
 }

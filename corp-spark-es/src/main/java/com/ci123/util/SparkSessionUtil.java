@@ -1,16 +1,17 @@
-package com.ci123.phoinex.spark.util;
+package com.ci123.util;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 
 /**
  * Copyright (c) 2018-2028 Corp-ci All Rights Reserved
  * <p>
  * Project: corp-project
- * Package: com.ci123.phoinex.spark.util
+ * Package: com.ci123.util
  * Version: 1.0
  * <p>
- * Created by SunYang on 2019/9/2 9:37
+ * Created by SunYang on 2019/9/9 17:16
  */
 public class SparkSessionUtil {
     private static SparkSession session = null ;
@@ -21,13 +22,13 @@ public class SparkSessionUtil {
      * @return
      */
     static {
-        sparkConf = new  SparkConf().setMaster("local[*]")
+        sparkConf = new SparkConf().setMaster("local[*]")
                 .setAppName("Spark")
-                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                .set("es.index.auto.create" , "true")
-                .set("es.node","hadoop101")
-                .set("es.port" , "9200")
-                .set("es.wan.only" , "true");
+                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+    }
+
+    public static JavaSparkContext getJavaSparkContext(){
+        return new JavaSparkContext(sparkConf) ;
     }
     /**
      * 得到 一个 session
@@ -49,3 +50,4 @@ public class SparkSessionUtil {
         return session ;
     }
 }
+

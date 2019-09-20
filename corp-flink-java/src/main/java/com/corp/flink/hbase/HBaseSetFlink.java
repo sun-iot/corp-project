@@ -17,5 +17,7 @@ public class HBaseSetFlink {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         // 实现 InputFormat
         env.createInput(new HBaseSourceInputFormat());
+
+
     }
 }

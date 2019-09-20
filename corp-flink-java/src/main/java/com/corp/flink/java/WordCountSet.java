@@ -38,7 +38,6 @@ public class WordCountSet {
                 }
             }
         }).groupBy(0).sum(1);
-
         try {
             sorceWordCount.print();
         } catch (Exception e) {
