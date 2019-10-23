@@ -18,6 +18,7 @@ import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
+import org.apache.flink.table.api.java.Tumble;
 import org.apache.flink.types.Row;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
@@ -82,6 +83,7 @@ public class HBaseTable {
                         BasicTypeInfo.STRING_TYPE_INFO
                 }))
                 .finish());
+        sourceHBase.print();
         DataSet<Dept> deptDataSet = sourceDeptHBase.map(new MapFunction<Row, Dept>() {
             @Override
             public Dept map(Row value) throws Exception {
@@ -109,6 +111,10 @@ public class HBaseTable {
         Table selectNameDeptidEmail = enmpTable.select("name,age,sex,email,company");
         Table selectLeftJoinEmpDept = enmpTable.join(deptTable).where("deptid=id ").select("name,age,sex,email,company,deptName,deptManager");
 
+        enmpTable.window(Tumble.over("3.minutes").on("rowTime").as("empWindow"));
+
+        enmpTable.select("name,age,sex,email,company").groupBy("name,age,sex,email,company");
+
         // 把得到的新表，转化成Dataset
         DataSet<Result> resultDataSet = tableEnv.toDataSet(selectNameDeptidEmail, Result.class);
         DataSet<ResultEmpDept> resultEmpept = tableEnv.toDataSet(selectLeftJoinEmpDept, ResultEmpDept.class);
@@ -118,14 +124,18 @@ public class HBaseTable {
         Map<String, String> config = new HashMap<>();
         config.put("bulk.flush.max.actions", ConfigConstant.getVal("es.max.actions"));
         config.put("cluster.name", ConfigConstant.getVal("es.cluster.name"));
+
         String hosts = ConfigConstant.getVal("es.node.host");
+
         Map<String, String> esIndexType = new HashMap<>();
         esIndexType.put("index", "flink-index");
         esIndexType.put("type", "flink-type");
+
         final List<HttpHost> httpHosts = Arrays.asList(hosts.split(","))
                 .stream()
                 .map(host -> new HttpHost(host, 9200, "http"))
                 .collect(Collectors.toList());
+
         resultDataSet.output( new ElasticsearchOutputFormat.Builder(
                 httpHosts,
                 new ElasticsearchSinkFunction<Result>() {

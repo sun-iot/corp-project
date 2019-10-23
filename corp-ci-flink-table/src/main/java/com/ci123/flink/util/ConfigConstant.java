@@ -33,4 +33,8 @@ public class ConfigConstant {
         return valueMap.get(key);
     }
 
+    public static void main(String[] args) {
+        System.out.println(ConfigConstant.getVal("es.max.actions"));
+    }
+
 }
